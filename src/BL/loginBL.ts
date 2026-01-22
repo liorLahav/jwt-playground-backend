@@ -1,24 +1,64 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { findUser } from "../DAL/loginDAL";
 import { StatusCodes } from "http-status-codes";
+import { User } from "../types/User";
 
-interface LoginRequestBody  {
-    userName: string;
-    password: string;
+interface LoginRequestBody {
+  userName: string;
+  password: string;
+  storedLocation: "cookies" | "localStorage" | "httponly";
+  alg: null | "HS256";
+  exp: true | false;
+  sameSite: "none" | "lax" | "strict";
+  secure: true | false;
+  httpOnly: true | false;
 }
 
-export const loginHandler = async (request: FastifyRequest<{Body: LoginRequestBody}>, reply: FastifyReply) => {
-    const {userName, password} = request.body as {userName: string, password: string};
-    const user = await findUser(userName, password);
+export const loginHandler = async (
+  request: FastifyRequest<{ Body: LoginRequestBody }>,
+  reply: FastifyReply,
+) => {
+  const {
+    userName,
+    password,
+    storedLocation,
+    alg,
+    exp,
+    sameSite,
+    httpOnly,
+    secure,
+  } = request.body;
+  const user = await findUser(userName, password);
 
-    if (!user) {
-        return reply.status(StatusCodes.UNAUTHORIZED).send({ error: "Invalid credentials" });
-    }
+  if (!user) {
+    return reply
+      .status(StatusCodes.UNAUTHORIZED)
+      .send({ error: "Invalid credentials" });
+  }
 
-    const token = await reply.jwtSign({ userId: user._id, userName: user.userName });
-    
+  const token = await reply.jwtSign({
+    id: user._id,
+    userName: user.userName,
+    role: user.role,
+  });
 
+  if (storedLocation === "localStorage") {
+    return reply
+      .status(StatusCodes.OK)
+      .send({ message: "Login successful", token, user });
+  }
 
+  if (storedLocation === "cookies") {
+    reply.setCookie("token", token, {
+      httpOnly: httpOnly,
+      secure: secure,
+      path: "/",
+      sameSite: sameSite,
+      maxAge: 60 * 60 * 24,
+    });
 
-    return reply.status(StatusCodes.OK).send({ message: "Login successful", user });
-}
+    return reply
+      .status(StatusCodes.OK)
+      .send({ message: "Login successful", user });
+  }
+};
