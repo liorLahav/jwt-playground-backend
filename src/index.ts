@@ -3,6 +3,7 @@ import { authRouts } from "./routes/auth";
 import fastifyCookie from "@fastify/cookie";
 import { fastifyJwt } from "@fastify/jwt";
 import { connectToDB } from "./mongoDB/connectToDB";
+import { panelRoutes } from "./routes/panel";
 
 const start = async () => {
   const server = fastify({
@@ -18,6 +19,7 @@ const start = async () => {
     });
 
     server.register(authRouts, { prefix: "/auth" });
+    server.register(panelRoutes, { prefix: "/panel" });
 
     server.listen({ port: 3000, host: "0.0.0.0" }, (err, address) => {
       if (err) {

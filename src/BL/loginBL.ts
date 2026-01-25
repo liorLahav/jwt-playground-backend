@@ -42,6 +42,8 @@ export const loginHandler = async (
     role: user.role,
   });
 
+  console.log(token)
+
   if (storedLocation === "localStorage") {
     return reply
       .status(StatusCodes.OK)
