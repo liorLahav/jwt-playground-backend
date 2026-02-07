@@ -6,6 +6,7 @@ export const authorization = (allowedRoles: string[] = []) => {
   return async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       let token = request.cookies?.token;
+      console.log("Request", request.headers)
 
       if (!token && request.headers["authorization"]) {
         const authHeader = request.headers["authorization"] as string;
@@ -15,8 +16,9 @@ export const authorization = (allowedRoles: string[] = []) => {
       if (!token) {
         return reply
           .status(StatusCodes.UNAUTHORIZED)
-          .send({ error: "Unauthorized" });
+          .send({ error: "Unauthorized" } );
       }
+
 
       request.headers.authorization = `Bearer ${token}`;
       const payload = (await request.jwtVerify()) as User;

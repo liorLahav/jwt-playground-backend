@@ -19,3 +19,4 @@ export const connectToDB = async () => {
 const db = mongoClient.db("JWT-Playground");
 
 export const usersCollection = db.collection("users");
+export const postsCollection = db.collection("posts");

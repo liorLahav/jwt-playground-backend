@@ -3,6 +3,16 @@ import { findUser } from "../DAL/loginDAL";
 import { StatusCodes } from "http-status-codes";
 import { User } from "../types/User";
 
+/**
+ * httponly - if true cookie not accessible via JS (mitigates XSS)
+ * secure - if true cookie only sent over HTTPS (mitigates MITM attacks)
+ * path - URL path cookie valid for (/ means entire site)
+ * sameSite:
+    *  none - cookie sent with all requests from any site (CSRF risk, requires secure) (secure should be true)
+    *  lax - cookie sent with top-level navigations and GET requests from other sites (some CSRF risk)
+    *  strict - cookie only sent with requests from same site (no CSRF risk)
+ */
+
 interface LoginRequestBody {
   userName: string;
   password: string;
@@ -28,6 +38,7 @@ export const loginHandler = async (
     httpOnly,
     secure,
   } = request.body;
+  console.log("Login request body:", request.body);
   const user = await findUser(userName, password);
 
   if (!user) {
