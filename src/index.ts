@@ -15,7 +15,10 @@ const start = async () => {
   try {
     connectToDB();
 
-    await server.register(cors, { origin: "http://localhost:5173" });
+    await server.register(cors, {
+      origin: ["http://localhost:5173", "http://127.0.0.1:5500"],
+      credentials: true,
+    });
 
     server.register(fastifyCookie);
     server.register(fastifyJwt, {

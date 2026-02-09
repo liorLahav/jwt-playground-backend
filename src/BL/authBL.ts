@@ -1,5 +1,5 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { findUser } from "../DAL/loginDAL";
+import { findUser } from "../DAL/authDAL";
 import { StatusCodes } from "http-status-codes";
 import { User } from "../types/User";
 
@@ -8,9 +8,9 @@ import { User } from "../types/User";
  * secure - if true cookie only sent over HTTPS (mitigates MITM attacks)
  * path - URL path cookie valid for (/ means entire site)
  * sameSite:
-    *  none - cookie sent with all requests from any site (CSRF risk, requires secure) (secure should be true)
-    *  lax - cookie sent with top-level navigations and GET requests from other sites (some CSRF risk)
-    *  strict - cookie only sent with requests from same site (no CSRF risk)
+ *  none - cookie sent with all requests from any site (CSRF risk, requires secure) (secure should be true)
+ *  lax - cookie sent with top-level navigations and GET requests from other sites (some CSRF risk)
+ *  strict - cookie only sent with requests from same site (no CSRF risk)
  */
 
 interface LoginRequestBody {
@@ -38,7 +38,6 @@ export const loginHandler = async (
     httpOnly,
     secure,
   } = request.body;
-  console.log("Login request body:", request.body);
   const user = await findUser(userName, password);
 
   if (!user) {
@@ -53,7 +52,7 @@ export const loginHandler = async (
     role: user.role,
   });
 
-  console.log(token)
+  console.log(token);
 
   if (storedLocation === "localStorage") {
     return reply
@@ -62,6 +61,7 @@ export const loginHandler = async (
   }
 
   if (storedLocation === "cookies") {
+    console.log("hey");
     reply.setCookie("token", token, {
       httpOnly: httpOnly,
       secure: secure,
@@ -74,4 +74,25 @@ export const loginHandler = async (
       .status(StatusCodes.OK)
       .send({ message: "Login successful", user });
   }
+};
+
+export const logoutHandler = async (
+  request: FastifyRequest,
+  reply: FastifyReply,
+) => {
+  reply.clearCookie("token", {
+    path: "/",
+  });
+  return reply
+    .status(StatusCodes.OK)
+    .send({ message: "Logged out successfully" });
+};
+
+export const GetUserHandler = async (
+  request: FastifyRequest,
+  reply: FastifyReply,
+) => {
+  const user = request.user as User;
+  console.log("GetUserHandler user:", request.user);
+  return reply.status(StatusCodes.OK).send({ user });
 };

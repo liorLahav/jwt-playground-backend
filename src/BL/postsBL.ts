@@ -6,10 +6,10 @@ export const addPostHandler = async (
   request: FastifyRequest,
   reply: FastifyReply,
 ) => {
-  const { id } = request.user as { id: string };
+  const { id, userName } = request.user as { id: string; userName: string };
   const { title, content } = request.body as Post;
 
-  await addPost({ title, content }, id);
+  await addPost({ title, content, userName }, id);
 };
 
 export const getAllPostsHandler = async (
