@@ -61,7 +61,6 @@ export const loginHandler = async (
   }
 
   if (storedLocation === "cookies") {
-    console.log("hey");
     reply.setCookie("token", token, {
       httpOnly: httpOnly,
       secure: secure,
@@ -80,6 +79,7 @@ export const logoutHandler = async (
   request: FastifyRequest,
   reply: FastifyReply,
 ) => {
+  console.log("Logging out user:", request.user);
   reply.clearCookie("token", {
     path: "/",
   });
@@ -94,5 +94,5 @@ export const GetUserHandler = async (
 ) => {
   const user = request.user as User;
   console.log("GetUserHandler user:", request.user);
-  return reply.status(StatusCodes.OK).send({ user });
+  return reply.status(StatusCodes.OK).send(user);
 };
