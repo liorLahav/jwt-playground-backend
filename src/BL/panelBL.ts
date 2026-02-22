@@ -1,35 +1,34 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { StatusCodes } from "http-status-codes";
 import { User } from "../types/User";
-import { getAllUsers } from "../DAL/adminPanelDAL";
+import { deleteUserById, getAllUsers, getNumOfUsers } from "../DAL/adminPanelDAL";
 
-export const adminPanelHandler = (
+export const getNumOfUsersHandler = async (
   request: FastifyRequest,
   reply: FastifyReply,
 ) => {
-  const user = request.user as User;
 
-  return reply
-    .status(StatusCodes.OK)
-    .send({ message: `Welcome to the admin panel, ${user.userName}!` });
-};
-
-export const userPanelHandler = (
-  request: FastifyRequest,
-  reply: FastifyReply,
-) => {
-  const user = request.user as User;
-
-  return reply
-    .status(StatusCodes.OK)
-    .send({ message: `Welcome to the user panel, ${user.userName}!` });
+  const users = await getNumOfUsers();
+  return reply.status(StatusCodes.OK).send(users);
 };
 
 export const getAllUsersHandler = async (
   request: FastifyRequest,
   reply: FastifyReply,
 ) => {
-
   const users = await getAllUsers();
   return reply.status(StatusCodes.OK).send(users);
-};
+}
+
+export const deleteUserHander = async (
+  request: FastifyRequest<{Params: {id: string}}>,
+  reply: FastifyReply,
+) => {
+  const id = request.params.id;
+  const success = await deleteUserById(id);
+  if (success) {
+    return reply.status(StatusCodes.OK).send({ message: "User deleted successfully" });
+  } else {
+    return reply.status(StatusCodes.NOT_FOUND).send({ error: "User not found" });
+  }
+}
