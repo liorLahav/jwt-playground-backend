@@ -1,5 +1,5 @@
 import { FastifyInstance, FastifyRequest } from "fastify";
-import { deleteUserHander, getAllUsersHandler, getNumOfUsersHandler } from "../BL/panelBL";
+import { deleteUserHander, getAllUsersHandler, getNumOfUsersHandler, getKidVulnHandler, toggleKidVulnHandler } from "../BL/panelBL";
 import { authorization } from "../middleware/authorization";
 
 export const panelRoutes = (server: FastifyInstance) => {
@@ -8,5 +8,6 @@ export const panelRoutes = (server: FastifyInstance) => {
   server.get("/getAllUnsecured", getAllUsersHandler);
   server.delete<{Params: {id: string}}>("/deleteUser/:id", {preHandler: [authorization(["admin"])]}, deleteUserHander);
   server.delete<{Params: {id: string}}>("/deleteUserUnSecured/:id", deleteUserHander);
-
+  server.get("/kidVuln", getKidVulnHandler);
+  server.post("/kidVuln", toggleKidVulnHandler);
 };
