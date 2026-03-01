@@ -6,6 +6,7 @@ import { connectToDB } from "./mongoDB/connectToDB";
 import { panelRoutes } from "./routes/panel";
 import cors from "@fastify/cors";
 import { postsRoutes } from "./routes/posts";
+import formbody from "@fastify/formbody"
 
 const start = async () => {
   const server = fastify({
@@ -22,6 +23,7 @@ const start = async () => {
     });
 
     server.register(fastifyCookie);
+    server.register(formbody)
     server.register(fastifyJwt, {
       secret: "yogev",
     });
