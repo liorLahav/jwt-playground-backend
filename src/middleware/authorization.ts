@@ -31,7 +31,7 @@ const verifyWithKid = (token: string): User | null => {
   let secret: string;
   try {
     secret = readFileSync(keyPath, "utf-8").trim();
-  } catch {
+  } catch (e) {
     return null;
   }
 
@@ -70,7 +70,7 @@ export const authorization = (allowedRoles: string[] = []) => {
         tokenKid = header.kid as string | undefined;
       } catch { /* ignore */ }
 
-      if (getKidVulnEnabled() && tokenKid) {
+      if (getKidVulnEnabled() && tokenKid !== undefined) {
         // VULNERABLE path: kid present and vuln is enabled — use file-based key lookup
         const result = verifyWithKid(token);
         if (!result) {
