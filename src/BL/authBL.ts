@@ -2,6 +2,8 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import { findUser } from "../DAL/authDAL";
 import { StatusCodes } from "http-status-codes";
 import { User } from "../types/User";
+import { getKidVulnEnabled, setKidVulnEnabled } from "./kidBL";
+import { getBacVulnEnabled, setBacVulnEnabled } from "./bacBL";
 
 /**
  * httponly - if true cookie not accessible via JS (mitigates XSS)
@@ -95,4 +97,34 @@ export const GetUserHandler = async (
   const user = request.user as User;
   console.log("GetUserHandler user:", request.user);
   return reply.status(StatusCodes.OK).send(user);
+};
+
+export const getKidVulnHandler = async (
+  request: FastifyRequest,
+  reply: FastifyReply,
+) => {
+  return reply.status(StatusCodes.OK).send({ enabled: getKidVulnEnabled() });
+};
+
+export const toggleKidVulnHandler = async (
+  request: FastifyRequest,
+  reply: FastifyReply,
+) => {
+  setKidVulnEnabled(!getKidVulnEnabled());
+  return reply.status(StatusCodes.OK).send({ enabled: getKidVulnEnabled() });
+};
+
+export const getBacVulnHandler = async (
+  request: FastifyRequest,
+  reply: FastifyReply,
+) => {
+  return reply.status(StatusCodes.OK).send({ enabled: getBacVulnEnabled() });
+};
+
+export const toggleBacVulnHandler = async (
+  request: FastifyRequest,
+  reply: FastifyReply,
+) => {
+  setBacVulnEnabled(!getBacVulnEnabled());
+  return reply.status(StatusCodes.OK).send({ enabled: getBacVulnEnabled() });
 };
