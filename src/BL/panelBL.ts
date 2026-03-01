@@ -2,6 +2,7 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import { StatusCodes } from "http-status-codes";
 import { User } from "../types/User";
 import { deleteUserById, getAllUsers, getNumOfUsers } from "../DAL/adminPanelDAL";
+import { getKidVulnEnabled, setKidVulnEnabled } from "./kidBL";
 
 export const getNumOfUsersHandler = async (
   request: FastifyRequest,
@@ -19,6 +20,21 @@ export const getAllUsersHandler = async (
   const users = await getAllUsers();
   return reply.status(StatusCodes.OK).send(users);
 }
+
+export const getKidVulnHandler = async (
+  request: FastifyRequest,
+  reply: FastifyReply,
+) => {
+  return reply.status(StatusCodes.OK).send({ enabled: getKidVulnEnabled() });
+};
+
+export const toggleKidVulnHandler = async (
+  request: FastifyRequest,
+  reply: FastifyReply,
+) => {
+  setKidVulnEnabled(!getKidVulnEnabled());
+  return reply.status(StatusCodes.OK).send({ enabled: getKidVulnEnabled() });
+};
 
 export const deleteUserHander = async (
   request: FastifyRequest<{Params: {id: string}}>,
