@@ -8,11 +8,8 @@ import { getBacVulnEnabled, setBacVulnEnabled } from "./bacBL";
 interface LoginRequestBody {
   userName: string;
   password: string;
-  storedLocation: "cookies" | "localStorage" | "httponly";
-  alg: null | "HS256";
-  exp: true | false;
+  storedLocation: "cookies" | "localStorage";
   sameSite: "none" | "lax" | "strict";
-  secure: true | false;
   httpOnly: true | false;
 }
 
@@ -24,11 +21,8 @@ export const loginHandler = async (
     userName,
     password,
     storedLocation,
-    alg,
-    exp,
     sameSite,
     httpOnly,
-    secure,
   } = request.body;
   const user = await findUser(userName, password);
 
@@ -55,7 +49,7 @@ export const loginHandler = async (
   if (storedLocation === "cookies") {
     reply.setCookie("token", token, {
       httpOnly: httpOnly,
-      secure: secure,
+      secure: true,
       path: "/",
       sameSite: sameSite,
       maxAge: 60 * 60 * 24,

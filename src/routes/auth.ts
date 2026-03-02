@@ -7,8 +7,8 @@ export const authRouts = (server: FastifyInstance) => {
     server.get('/getUser', {preHandler: [authorization()]}, GetUserHandler);
     server.post('/logout', logoutHandler)
 
-      server.get("/kidVuln", getKidVulnHandler);
-      server.post("/kidVuln", toggleKidVulnHandler);
-      server.get("/bacVuln", getBacVulnHandler );
-      server.post("/bacVuln", toggleBacVulnHandler);
+    server.get("/kidVuln", getKidVulnHandler);
+    server.post("/kidVuln", toggleKidVulnHandler);
+    server.get("/bacVuln", getBacVulnHandler );
+    server.post("/bacVuln", toggleBacVulnHandler);
 } 
