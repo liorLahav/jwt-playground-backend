@@ -85,12 +85,10 @@ export const authorization = (allowedRoles: string[] = []) => {
         request.headers.authorization = `Bearer ${token}`;
         payload = (await request.jwtVerify()) as User;
       }
-
+      
       const bacVulnEnabled = getBacVulnEnabled();
 
-
       if (!bacVulnEnabled && allowedRoles.length > 0 && !allowedRoles.includes(payload.role)) {
-        console.log(`User role: ${payload.role}, Allowed roles: ${allowedRoles} ${getBacVulnEnabled()}`);
         return reply.status(StatusCodes.FORBIDDEN).send({ error: "Forbidden" });
       }
 
