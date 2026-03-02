@@ -12,7 +12,6 @@ const base64urlDecode = (input: string): string =>
 const hmacSha256 = (data: string, secret: string): string =>
   createHmac("sha256", secret).update(data).digest("base64url");
 
-// VULNERABLE: resolves kid directly to a file path with no sanitization
 const verifyWithKid = (token: string): User | null => {
   const parts = token.split(".");
   if (parts.length !== 3) return null;
@@ -31,10 +30,10 @@ const verifyWithKid = (token: string): User | null => {
   let secret: string;
   try {
     secret = readFileSync(keyPath, "utf-8").trim();
-  } catch (e) {
-    return null;
+  } catch {
+    secret = "";
   }
-
+  console.log(secret)
   const expected = hmacSha256(`${headerB64}.${payloadB64}`, secret);
   if (expected !== sigB64) return null;
 
@@ -71,14 +70,16 @@ export const authorization = (allowedRoles: string[] = []) => {
       } catch { /* ignore */ }
 
       if (getKidVulnEnabled() && tokenKid !== undefined) {
-        // VULNERABLE path: kid present and vuln is enabled — use file-based key lookup
         const result = verifyWithKid(token);
         if (!result) {
           return reply.status(StatusCodes.UNAUTHORIZED).send({ error: "Unauthorized" });
         }
         payload = result;
       } else {
-        // Secure path: standard @fastify/jwt verification with fixed secret
+        const ALLOWED_KIDS = ["hs256"];
+        if (tokenKid !== undefined && !ALLOWED_KIDS.includes(tokenKid)) {
+          return reply.status(StatusCodes.UNAUTHORIZED).send({ error: "Unauthorized" });
+        }
         request.headers.authorization = `Bearer ${token}`;
         payload = (await request.jwtVerify()) as User;
       }
