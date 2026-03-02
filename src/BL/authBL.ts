@@ -5,16 +5,6 @@ import { User } from "../types/User";
 import { getKidVulnEnabled, setKidVulnEnabled } from "./kidBL";
 import { getBacVulnEnabled, setBacVulnEnabled } from "./bacBL";
 
-/**
- * httponly - if true cookie not accessible via JS (mitigates XSS)
- * secure - if true cookie only sent over HTTPS (mitigates MITM attacks)
- * path - URL path cookie valid for (/ means entire site)
- * sameSite:
- *  none - cookie sent with all requests from any site (CSRF risk, requires secure) (secure should be true)
- *  lax - cookie sent with top-level navigations and GET requests from other sites (some CSRF risk)
- *  strict - cookie only sent with requests from same site (no CSRF risk)
- */
-
 interface LoginRequestBody {
   userName: string;
   password: string;

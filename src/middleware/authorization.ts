@@ -5,6 +5,8 @@ import { createHmac } from "crypto";
 import { readFileSync } from "fs";
 import { join } from "path";
 import { getKidVulnEnabled } from "../BL/kidBL";
+import { getBacVulnEnabled } from "../BL/bacBL";
+import { get } from "http";
 
 const base64urlDecode = (input: string): string =>
   Buffer.from(input, "base64url").toString("utf-8");
@@ -84,7 +86,11 @@ export const authorization = (allowedRoles: string[] = []) => {
         payload = (await request.jwtVerify()) as User;
       }
 
-      if (allowedRoles.length > 0 && !allowedRoles.includes(payload.role)) {
+      const bacVulnEnabled = getBacVulnEnabled();
+
+
+      if (!bacVulnEnabled && allowedRoles.length > 0 && !allowedRoles.includes(payload.role)) {
+        console.log(`User role: ${payload.role}, Allowed roles: ${allowedRoles} ${getBacVulnEnabled()}`);
         return reply.status(StatusCodes.FORBIDDEN).send({ error: "Forbidden" });
       }
 
